@@ -1,6 +1,10 @@
+//signal light sensor input
+const sensor1 = crickit.signal1
+const sensor2 = crickit.signal2
+
 //constants
-const lightTreshold = input.lightLevel() + 20
-const lightImmunity = 3000 //time immune from laser
+const lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 20 //avg + 20
+const lightImmunity = 1000 //time immune from laser
 
 const minSpeed = 10
 const maxSpeed = 50
@@ -8,12 +12,16 @@ const maxSpeed = 50
 const minTime = 300
 const maxTime = 800
 
+const duration = 10000
+const waitTime = 2000
+
 const biasTreshold = 1000 //decides on how much "bias" the bot should always drive that direction
 
 const maxScore = 3
 
 //variables
 let running = false
+let multiplayer = false
 
 let currentSpeed = 0
 let currentTime = 0 //means time it spends driving
@@ -25,6 +33,7 @@ let biasLeft = 0
 let biasRight = 0
 
 let score = 0
+let score2 = 0
 
 //main functions
 const run = () => {
@@ -45,39 +54,94 @@ const run = () => {
 forever(function () {
     //lightlevel event doesnt work
     //checks for laser on light sensor
-    if (running && input.lightLevel() > lightTreshold) {
+    if (running && !multiplayer && input.lightLevel() > lightTreshold) {
         score++
         music.baDing.playUntilDone()
         console.log(score)
 
         if (score >= maxScore) { //ends the "game"
-            running = false
             light.setAll(Colors.Green)
-            crickit.motor1.stop()
-            crickit.motor2.stop()
+            endGame()
             return
         }
 
         loops.pause(lightImmunity) //stop getting hit for lightImmunity milliseconds
     }
+
+    if (running && !multiplayer) {
+        if (sensor1.analogRead() > lightTreshold) {
+            score++
+            music.baDing.playUntilDone()
+            console.log(score)
+
+            if (score >= maxScore) { //ends the "game"
+                light.setAll(Colors.Green)
+                endGame()
+                return
+            }
+        }
+    }
+
+    else if (running && multiplayer) {
+        if (sensor1.analogRead() > lightTreshold) {
+            score++
+            music.baDing.playUntilDone()
+            console.log(score)
+        }
+        if (sensor2.analogRead() > lightTreshold) {
+            score2++
+            music.baDing.playUntilDone()
+            console.log(score2)
+        }
+    }
+
 })
+
+function endGame() {
+    multiplayer = false
+    running = false
+    crickit.motor1.stop()
+    crickit.motor2.stop()
+    setTimeout(() => light.clear(), duration)
+}
 
 //events
 input.buttonA.onEvent(ButtonEvent.Click, function () {
     if (running) { //turns off
-        running = false
-        crickit.motor1.stop()
-        crickit.motor2.stop()
-        return
+        endGame()
     }
 
-    //wait for a bit while showing animation
-    light.showAnimation(light.rainbowAnimation, 5000)
+    //wait for a bit
+    pause(waitTime)
     light.setAll(Colors.Black)
 
     //do the thing
     running = true
     run()
+})
+
+input.buttonB.onEvent(ButtonEvent.Click, function () {
+    if (running) { //turns off
+        endGame()
+    }
+
+    pause(waitTime) //wait a sec
+
+    //do the thing
+    multiplayer = true
+    running = true
+    run()
+
+    setTimeout(() => {
+        if (score > score2) {
+            console.log('TODO')
+        }
+        else {
+            console.log('TODO')
+        }
+
+        endGame()
+    }, 10000)
 })
 
 //minor functions
