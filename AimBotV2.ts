@@ -3,7 +3,7 @@ const sensor1 = crickit.signal1
 const sensor2 = crickit.signal2
 
 //constants
-const lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 20 //avg + 20
+const lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 80 //avg + 80
 const lightImmunity = 1000 //time immune from laser
 
 const minSpeed = 10
