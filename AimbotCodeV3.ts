@@ -4,7 +4,7 @@ const sensor1 = crickit.signal2
 
 //constants
 const lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 80 //avg + 80
-const lightImmunity = 1000 //time immune from laser
+const lightImmunity = 2000 //time immune from laser
 
 const minSpeed = 40
 const maxSpeed = 80
@@ -82,10 +82,10 @@ forever(function () {
 
         setTimeout(() => {
             if (score > score2) {
-                console.log('TODO')
+                music.playMelody("C5 - C5 - C5 - C5 - ", 120)
             }
             else {
-                console.log('TODO')
+                music.playMelody("- E - E - E - E ", 120)
             }
 
             endGame()
@@ -235,4 +235,4 @@ function getDirection() {
 enum Direction {
     Left,
     Right
-}
+}  
