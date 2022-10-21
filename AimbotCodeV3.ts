@@ -3,7 +3,7 @@ const sensor2 = crickit.signal1
 const sensor1 = crickit.signal2
 
 //constants
-const lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 80 //avg + 80
+let lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 150 //avg + 80
 const lightImmunity = 2000 //time immune from laser
 
 const minSpeed = 40
@@ -30,6 +30,7 @@ let currentDirection: Direction
 //bias is built up based on the amount of time the bot drives in the opposite direction
 //hopefully prevents bot driving too much in same direction
 let biasLeft = 0
+
 let biasRight = 0
 
 let score = 0
@@ -59,7 +60,7 @@ forever(function () {
             endGame()
             return
         }
-
+        lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 150
         //wait for a bit
         pause(waitTime)
         light.setAll(Colors.Black)
@@ -72,7 +73,7 @@ forever(function () {
             endGame()
             return
         }
-
+        lightTreshold = sensor1.analogRead() + sensor2.analogRead() / 2 + 150
         pause(waitTime) //wait a sec
 
         //do the thing
@@ -82,10 +83,12 @@ forever(function () {
 
         setTimeout(() => {
             if (score > score2) {
-                music.playMelody("C5 - C5 - C5 - C5 - ", 120)
+                music.magicWand.play()
+                console.log("Winner Team 1")
             }
             else {
-                music.playMelody("- E - E - E - E ", 120)
+                music.wawawawaa.play()
+                console.log("Winner Team 2")
             }
 
             endGame()
@@ -119,6 +122,8 @@ forever(function () {
                 endGame()
                 return
             }
+
+            loops.pause(lightImmunity)
         }
     }
 
@@ -127,11 +132,13 @@ forever(function () {
             score++
             music.baDing.playUntilDone()
             console.log(score)
+            loops.pause(lightImmunity)
         }
         if (sensor2.analogRead() > lightTreshold) {
             score2++
             music.baDing.playUntilDone()
             console.log(score2)
+            loops.pause(lightImmunity)
         }
     }
 
